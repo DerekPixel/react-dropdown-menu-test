@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react'
 
-const DropDown = ({dropDownList = Array, title = String, setDropdownList}) => {
+const DropDown = ({dropDownMenuArray = Array, title = String, setDropdownList: setDropdownArray}) => {
 
   const [isOpen, setIsOpen] = useState(false);
   const [headerTitle, setHeaderTitle] = useState(title)
@@ -14,7 +14,7 @@ const DropDown = ({dropDownList = Array, title = String, setDropdownList}) => {
     }
   }, [])
 
-  var dropDown = dropDownList.map((obj, i, list) => {
+  var dropDown = dropDownMenuArray.map((obj, i, list) => {
     return (
       <div
         className={obj.selected ? 'dropdown-item selected' : 'dropdown-item'}
@@ -45,7 +45,7 @@ const DropDown = ({dropDownList = Array, title = String, setDropdownList}) => {
 
     newList[index].selected = true;
 
-    setDropdownList(newList);
+    setDropdownArray(newList);
     setIsOpen(false);
     setHeaderTitle(e.target.textContent);
   }

@@ -24,7 +24,7 @@ function App() {
   
   return (
     <div className="App">
-      <DropDown dropDownList={dropDownList} title='DropDown List' setDropdownList={(list) => {setDropDownList(list)}} />
+      <DropDown dropDownMenuArray={dropDownList} title='DropDown List' setDropdownArray={(list) => {setDropDownList(list)}} />
     </div>
   );
 }
