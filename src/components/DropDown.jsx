@@ -26,7 +26,7 @@ const DropDown = ({dropDownMenuArray = Array, title = String, setDropdownList: s
     )
   })
 
-  function handleHeaderClick() {
+  function handleDropdownHeaderClick() {
     if(isOpen) {
       setIsOpen(false);
     } else {
@@ -61,18 +61,24 @@ const DropDown = ({dropDownMenuArray = Array, title = String, setDropdownList: s
 
       <div 
         className='dropdown-header'
-        onClick={() => {handleHeaderClick()}} 
+        onClick={() => {handleDropdownHeaderClick()}} 
       >
         {headerTitle}
       </div> 
 
       {
         isOpen &&
-      <div 
-        className='dropdown-list'
-      >
-        {dropDown}
-      </div>
+        <div 
+          className='dropdown-list'
+        >
+          {
+            dropDown.length === 0 ?
+            <div
+              className='no-palettes'
+            >Nothing Here</div> :
+            dropDown
+          }
+        </div>
       }
     </div>
   )
