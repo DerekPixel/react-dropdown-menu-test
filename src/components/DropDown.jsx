@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react'
 
-const DropDown = ({dropDownMenuArray = Array, title = String, setDropdownList: setDropdownArray}) => {
+const DropDown = ({dropDownMenuArray = Array, title = String, setDropdownArray}) => {
 
   const [isOpen, setIsOpen] = useState(false);
   const [headerTitle, setHeaderTitle] = useState(title)
