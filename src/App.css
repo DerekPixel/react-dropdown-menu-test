@@ -67,6 +67,7 @@ box-sizing: border-box;
   border: 1px black solid;
   cursor: pointer;
   padding: 5px;
+  width: 222px;
   user-select: none;
 }
 
