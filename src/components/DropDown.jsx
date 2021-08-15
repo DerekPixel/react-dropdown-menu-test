@@ -74,7 +74,7 @@ const DropDown = ({dropDownMenuArray = Array, title = String, setDropdownArray})
           {
             dropDown.length === 0 ?
             <div
-              className='no-palettes'
+              className='no-options'
             >Nothing Here</div> :
             dropDown
           }

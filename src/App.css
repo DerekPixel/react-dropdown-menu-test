@@ -89,6 +89,12 @@ box-sizing: border-box;
   background-color: rgb(255, 196, 0);
 }
 
+.no-options {
+  padding: 10px 5px;
+  width: 100%;
+  white-space: nowrap;
+}
+
 .selected {
   background-color: lightblue;
 }
