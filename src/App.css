@@ -71,11 +71,16 @@ box-sizing: border-box;
   user-select: none;
 }
 
+.search-input:focus {
+  outline: none;
+  box-shadow: inset 0 0 2px 1px rgb(25, 102, 255);
+}
+
 .dropdown-list {
   border: 1px black solid;
   border-top: none;
   height: 150px;
-  overflow-y:auto;
+  overflow-y: auto;
   position: absolute;
   width: inherit;
 }
