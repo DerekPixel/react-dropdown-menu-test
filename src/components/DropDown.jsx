@@ -84,7 +84,7 @@ const DropDown = ({dropDownMenuArray = Array, title = String, setDropdownArray})
         <div>
           <input
             autoFocus
-            className='dropdown-header'
+            className='dropdown-header search-input'
             type="search"
             value={searchInput}
             onChange={(e) => handleSearch(e)}
