@@ -85,14 +85,31 @@ box-sizing: border-box;
   width: inherit;
 }
 
+.dropdown-item-container {
+  display: flex;
+}
+
 .dropdown-item {
   font-weight: bold;
   padding: 10px 5px;
+  width: 100%;
+  white-space: nowrap;
 }
 
 .dropdown-item:hover {
   cursor: pointer;
   background-color: rgb(255, 196, 0);
+}
+
+.dropdown-item-delete-btn {
+  color: white;
+  cursor: pointer;
+  background-color: rgb(25, 102, 255);
+  border: none;
+  border-radius: 5px;
+  font-family: 'telex';
+  margin: 5px;
+  padding: 2px 10px;
 }
 
 .no-options {
