@@ -19,15 +19,37 @@ const DropDown = ({dropDownMenuArray = Array, title = String, setDropdownArray})
   function mapDropDown(dropDownArray) {
     return dropDownArray.map((obj, i, list) => {
       return (
+      <div
+        className='dropdown-item-container'
+        key={obj.index}
+      >
         <div
-          className={obj.selected ? 'dropdown-item selected' : 'dropdown-item'}
-          key={obj.index}
+          className={list[obj.index].selected ? 'dropdown-item selected' : 'dropdown-item'}
           onClick={(e) => {handleItemClick(e, obj.index, list)}}
         >
           {obj.title}
         </div>
+        <button
+          className='dropdown-item-delete-btn'
+          onClick={() => {handleDeleteItem(obj.index, list)}}
+        >X</button>
+      </div>
       )
     })
+  }
+
+  function handleDeleteItem(index, list) {
+    var listcopy = list.slice();
+    var newArray = [];
+
+    listcopy.splice(index, 1);
+
+    for(var i = 0; i < listcopy.length; i++) {
+      var cloneObj = {...listcopy[i]};
+
+      newArray.push(cloneObj);
+    }
+    setDropdownArray(newArray);
   }
 
   function handleDropdownHeaderClick() {
@@ -50,6 +72,7 @@ const DropDown = ({dropDownMenuArray = Array, title = String, setDropdownArray})
     newList[index].selected = true;
 
     setDropdownArray(newList);
+    setDropDown(mapDropDown(newList));
     setIsOpen(false);
     setHeaderTitle(e.target.textContent);
   }
