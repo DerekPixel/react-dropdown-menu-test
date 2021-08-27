@@ -83,6 +83,7 @@ box-sizing: border-box;
   overflow-y: auto;
   position: absolute;
   width: inherit;
+  z-index: 10;
 }
 
 .dropdown-item-container {
