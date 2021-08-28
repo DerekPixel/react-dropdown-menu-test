@@ -1,6 +1,12 @@
 import React, { useRef, useState, useEffect } from 'react'
 
-const DropDown = ({dropDownMenuArray = Array, title = String, setDropdownArray}) => {
+var settingsObject = {
+  isSearchable: true,
+  canDeleteItems: true,
+
+}
+
+const DropDown = ({dropDownMenuArray = Array, title = String, setDropdownMenuArray, settings = settingsObject}) => {
 
   const [isOpen, setIsOpen] = useState(false);
   const [headerTitle, setHeaderTitle] = useState(title);
@@ -29,10 +35,13 @@ const DropDown = ({dropDownMenuArray = Array, title = String, setDropdownArray})
         >
           {obj.title}
         </div>
-        <button
-          className='dropdown-item-delete-btn'
-          onClick={() => {handleDeleteItem(obj.index, list)}}
-        >X</button>
+        {
+          settings.canDeleteItems &&
+          <button
+            className='dropdown-item-delete-btn'
+            onClick={() => {handleDeleteItem(obj.index, list)}}
+          >X</button>
+        }
       </div>
       )
     })
@@ -49,7 +58,7 @@ const DropDown = ({dropDownMenuArray = Array, title = String, setDropdownArray})
 
       newArray.push(cloneObj);
     }
-    setDropdownArray(newArray);
+    setDropdownMenuArray(newArray);
   }
 
   function handleDropdownHeaderClick() {
@@ -71,7 +80,7 @@ const DropDown = ({dropDownMenuArray = Array, title = String, setDropdownArray})
 
     newList[index].selected = true;
 
-    setDropdownArray(newList);
+    setDropdownMenuArray(newList);
     setDropDown(mapDropDown(newList));
     setIsOpen(false);
     setHeaderTitle(e.target.textContent);
@@ -90,21 +99,29 @@ const DropDown = ({dropDownMenuArray = Array, title = String, setDropdownArray})
         return obj.title.includes(e.target.value)
       });
 
+      for(var i = 0; i < results.length; i++) {
+        results[i].index = i;
+      }
+
       setDropDown(mapDropDown(results));
     } else {
-      setDropDown(mapDropDown(dropDownMenuArray));
+
+      var temp = [...dropDownMenuArray];
+
+      for(i = 0; i < temp.length; i++) {
+        temp[i].index = i;
+      }
+
+      setDropDown(mapDropDown(temp));
     }
 
     setSearchInput(e.target.value);
   }
 
-  return (
-    <div className='dropdown' ref={dropDownRef} >
-
-      {
-        isOpen ?
-
-        <div>
+  function conditionallyRender() {
+    if(settings.isSearchable) {
+      if(isOpen) {
+        return <div>
           <input
             autoFocus
             className='dropdown-header search-input'
@@ -112,18 +129,55 @@ const DropDown = ({dropDownMenuArray = Array, title = String, setDropdownArray})
             value={searchInput}
             onChange={(e) => handleSearch(e)}
           />
-        </div>:
-
-        <div
+        </div>
+      } else {
+        return <div
           className='dropdown-header'
           onClick={() => {handleDropdownHeaderClick()}}
-
         >
           {headerTitle}
         </div>
       }
+    } 
 
+    return <div
+      className='dropdown-header'
+      onClick={() => {handleDropdownHeaderClick()}}
+    >
+      {headerTitle}
+    </div>
+  }
 
+  function duplicateObjectsInArrayOrObject(thingThatNeedsToBeDupped) {
+    var thingCopy, thingClone;
+  
+    if(Array.isArray(thingThatNeedsToBeDupped)) {
+      thingCopy = thingThatNeedsToBeDupped.slice();
+      thingClone = [];
+      for(var i = 0; i < thingCopy.length; i++) {
+        var objClone = {...thingCopy[i]}
+    
+        thingClone.push(objClone);
+      }
+    } else {
+      thingCopy = {...thingThatNeedsToBeDupped};
+      thingClone = {};
+      for(var j = 0; j < Object.keys(thingCopy).length; j++) {
+        var objClone = {...thingCopy[Object.keys(thingCopy)[j]]}
+    
+        thingClone[Object.keys(thingCopy)[j]] = objClone;
+      }
+    }
+  
+    return thingClone;
+  }
+
+  return (
+    <div className='dropdown' ref={dropDownRef} >
+
+      {
+        conditionallyRender()
+      }
 
       {
         isOpen &&
