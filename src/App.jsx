@@ -7,24 +7,46 @@ function App() {
   const [dropDownList, setDropDownList] = useState(initilizeDropDownListTemp())
 
   function initilizeDropDownListTemp() {
-    var list = [];
 
-    for(var i = 0; i < 10; i++) {
-      var obj = {
-        title: 'obj' + i,
-        index: i,
-        selected: false
-      };
+    var makeArray = false;
+    var output;
 
-      list.push(obj);
+    if(makeArray) {
+      output = [];
+
+      for(let i = 0; i < 10; i++) {
+        let obj = {
+          title: 'obj' + i,
+          index: i,
+          selected: false
+        };
+  
+        output.push(obj);
+      }
+    } else {
+      output = {};
+
+      for(let i = 0; i < 10; i++) {
+        let obj = {
+          title: 'obj' + i,
+          index: i,
+          selected: false
+        };
+
+        output[obj.title] = obj;
+      }
     }
 
-    return list;
+    return output;
   }
   
   return (
     <div className="App">
-      <DropDown dropDownMenuArray={dropDownList} title='DropDown List' setDropdownMenuArray={(list) => {setDropDownList(list)}} />
+      <DropDown 
+        originalDropDownObject={dropDownList} 
+        title='DropDown List' 
+        setOriginalDropDownObject={(list) => {setDropDownList(list)}}
+      />
     </div>
   );
 }
