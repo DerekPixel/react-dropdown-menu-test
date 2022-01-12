@@ -6,11 +6,11 @@ var settingsObject = {
 
 }
 
-const DropDown = ({dropDownMenuArray = Array, title = String, setDropdownMenuArray, settings = settingsObject}) => {
+const DropDown = ({originalDropDownObject, title = String, setOriginalDropDownObject, settings = settingsObject}) => {
 
   const [isOpen, setIsOpen] = useState(false);
   const [headerTitle, setHeaderTitle] = useState(title);
-  const [dropDown, setDropDown] = useState(mapDropDown(dropDownMenuArray));
+  const [mappedDropDown, setMappedDropDown] = useState(mapDropDown(originalDropDownObject));
   const [searchInput, setSearchInput] = useState('');
 
   const dropDownRef = useRef(null);
@@ -22,43 +22,93 @@ const DropDown = ({dropDownMenuArray = Array, title = String, setDropdownMenuArr
     }
   }, [])
 
-  function mapDropDown(dropDownArray) {
-    return dropDownArray.map((obj, i, list) => {
-      return (
+  function mapDropDown(dropDownObject) {
+    if(returnTrueIfInputIsAnArray(dropDownObject)) {
+      return dropDownObject.map((obj, i, arrayBeingMapped) => {
+        return returnDropDownItemContainer(obj.title, obj.index);
+      })
+    } else {
+      return Object.keys(dropDownObject).map((keyname, i, keysBeingMapped) => {
+        return returnDropDownItemContainer(keyname, keyname)
+      })
+    }
+  }
+
+  function returnDropDownItemContainer(title, indexOrKeyname) {
+    return (
       <div
         className='dropdown-item-container'
-        key={obj.index}
+        key={title}
       >
         <div
-          className={list[obj.index].selected ? 'dropdown-item selected' : 'dropdown-item'}
-          onClick={(e) => {handleItemClick(e, obj.index, list)}}
+          className={originalDropDownObject[indexOrKeyname].selected ? 'dropdown-item selected' : 'dropdown-item'}
+          onClick={(e) => {handleItemClick(e, indexOrKeyname)}}
         >
-          {obj.title}
+          {title}
         </div>
         {
           settings.canDeleteItems &&
           <button
             className='dropdown-item-delete-btn'
-            onClick={() => {handleDeleteItem(obj.index, list)}}
+            onClick={() => {handleDeleteItem(indexOrKeyname)}}
           >X</button>
         }
       </div>
-      )
-    })
+    )
   }
 
-  function handleDeleteItem(index, list) {
-    var listcopy = list.slice();
-    var newArray = [];
+  function handleItemClick(e, indexOrKeyname) {
+    var newDropDownObject = duplicateObjectsInArrayOrObject(originalDropDownObject);
 
-    listcopy.splice(index, 1);
-
-    for(var i = 0; i < listcopy.length; i++) {
-      var cloneObj = {...listcopy[i]};
-
-      newArray.push(cloneObj);
+    if(returnTrueIfInputIsAnArray(newDropDownObject)) {
+      for(var i = 0; i < newDropDownObject.length; i++) {
+        newDropDownObject[i].selected = false;
+      }
+    } else {
+      var keysArray = Object.keys(newDropDownObject);
+      for(var j = 0; j < keysArray.length; j++) {
+        newDropDownObject[keysArray[j]].selected = false;
+      }
     }
-    setDropdownMenuArray(newArray);
+
+    newDropDownObject[indexOrKeyname].selected = true;
+
+    setOriginalDropDownObject(newDropDownObject);
+    setMappedDropDown(mapDropDown(newDropDownObject));
+    setIsOpen(false);
+    setHeaderTitle(e.target.textContent);
+  }
+
+  function handleDeleteItem(indexOrKeyname) {
+    var newDropDownObject = duplicateObjectsInArrayOrObject(originalDropDownObject);
+
+    if(returnTrueIfInputIsAnArray(newDropDownObject)) {
+
+      newDropDownObject.splice(indexOrKeyname, 1);
+
+      for(var i = 0; i < newDropDownObject.length; i++) {
+        newDropDownObject[i].index = i;
+      }
+    } else {
+      console.log(newDropDownObject);
+      delete newDropDownObject[indexOrKeyname];
+      console.log(newDropDownObject);
+
+    }
+
+
+    if(searchInput !== '') {
+      mapSearchResults(searchInput, newDropDownObject);
+    } else {
+      setMappedDropDown(mapDropDown(newDropDownObject));
+    }
+    setOriginalDropDownObject(newDropDownObject);
+
+    setHeaderTitle(
+      returnTrueIfInputIsAnArray(newDropDownObject) ?
+      newDropDownObject[0].title :
+      newDropDownObject[Object.keys(newDropDownObject)[0]].title
+    )
   }
 
   function handleDropdownHeaderClick() {
@@ -69,23 +119,6 @@ const DropDown = ({dropDownMenuArray = Array, title = String, setDropdownMenuArr
     }
   }
 
-  function handleItemClick(e, index, list = Array) {
-    var newList = list.slice();
-
-    for(var i = 0; i < newList.length; i++) {
-      if(newList[i].selected === true) {
-        newList[i].selected = false;
-      }
-    }
-
-    newList[index].selected = true;
-
-    setDropdownMenuArray(newList);
-    setDropDown(mapDropDown(newList));
-    setIsOpen(false);
-    setHeaderTitle(e.target.textContent);
-  }
-
   function handleDocumentClick(e) {
     if(dropDownRef.current && !dropDownRef.current.contains(e.target)) {
       setIsOpen(false);
@@ -94,28 +127,59 @@ const DropDown = ({dropDownMenuArray = Array, title = String, setDropdownMenuArr
 
   function handleSearch(e) {
 
-    if(e.target.value !== '') {
-      var results = dropDownMenuArray.filter(obj => {
-        return obj.title.includes(e.target.value)
-      });
-
-      for(var i = 0; i < results.length; i++) {
-        results[i].index = i;
-      }
-
-      setDropDown(mapDropDown(results));
-    } else {
-
-      var temp = [...dropDownMenuArray];
-
-      for(i = 0; i < temp.length; i++) {
-        temp[i].index = i;
-      }
-
-      setDropDown(mapDropDown(temp));
-    }
+    mapSearchResults(e.target.value, originalDropDownObject);
 
     setSearchInput(e.target.value);
+  }
+
+  function mapSearchResults(stringToSearch, dropDownObject) {
+    if(returnTrueIfInputIsAnArray(dropDownObject)) {
+
+      if(stringToSearch !== '') {
+        let results = dropDownObject.filter(obj => {
+          return obj.title.includes(stringToSearch)
+        });
+
+        for(let i = 0; i < results.length; i++) {
+          results[i].index = i;
+        }
+
+        setMappedDropDown(mapDropDown(results));
+      } else {
+
+        var temp = [...dropDownObject];
+
+        for(let i = 0; i < temp.length; i++) {
+          temp[i].index = i;
+        }
+
+        setMappedDropDown(mapDropDown(temp));
+      }
+
+    } else {
+      if(stringToSearch !== '') {
+        var objectClone = duplicateObjectsInArrayOrObject(dropDownObject);
+        var objectKeys = Object.keys(objectClone);
+        let results = {};
+
+        for(let i = 0; i < objectKeys.length; i++) {
+
+          var currentObject = objectClone[objectKeys[i]];
+
+          if(currentObject.title.includes(stringToSearch)) {
+            results[currentObject.title] = currentObject;
+          }
+        }
+
+        for(let j = 0; j < Object.keys(results).length; j++) {
+          results[Object.keys(results)[j]].index = j;
+        }
+
+        setMappedDropDown(mapDropDown(results));
+      } else {
+        setMappedDropDown(mapDropDown(dropDownObject));
+      }
+    }
   }
 
   function conditionallyRender() {
@@ -149,13 +213,13 @@ const DropDown = ({dropDownMenuArray = Array, title = String, setDropdownMenuArr
   }
 
   function duplicateObjectsInArrayOrObject(thingThatNeedsToBeDupped) {
-    var thingCopy, thingClone;
+    var thingCopy, thingClone, objClone;
   
-    if(Array.isArray(thingThatNeedsToBeDupped)) {
+    if(returnTrueIfInputIsAnArray(thingThatNeedsToBeDupped)) {
       thingCopy = thingThatNeedsToBeDupped.slice();
       thingClone = [];
       for(var i = 0; i < thingCopy.length; i++) {
-        var objClone = {...thingCopy[i]}
+        objClone = {...thingCopy[i]}
     
         thingClone.push(objClone);
       }
@@ -163,13 +227,17 @@ const DropDown = ({dropDownMenuArray = Array, title = String, setDropdownMenuArr
       thingCopy = {...thingThatNeedsToBeDupped};
       thingClone = {};
       for(var j = 0; j < Object.keys(thingCopy).length; j++) {
-        var objClone = {...thingCopy[Object.keys(thingCopy)[j]]}
+        objClone = {...thingCopy[Object.keys(thingCopy)[j]]}
     
         thingClone[Object.keys(thingCopy)[j]] = objClone;
       }
     }
   
     return thingClone;
+  }
+
+  function returnTrueIfInputIsAnArray(objectToCheck) {
+    return Array.isArray(objectToCheck);
   }
 
   return (
@@ -185,11 +253,11 @@ const DropDown = ({dropDownMenuArray = Array, title = String, setDropdownMenuArr
           className='dropdown-list'
         >
           {
-            dropDown.length === 0 ?
+            mappedDropDown.length === 0 ?
             <div
               className='no-options'
             >Nothing Here</div> :
-            dropDown
+            mappedDropDown
           }
         </div>
       }
