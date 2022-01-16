@@ -3,7 +3,6 @@ import React, { useRef, useState, useEffect } from 'react'
 var settingsObject = {
   isSearchable: true,
   canDeleteItems: true,
-
 }
 
 const DropDown = ({originalDropDownObject, title = String, setOriginalDropDownObject, settings = settingsObject}) => {
@@ -20,15 +19,25 @@ const DropDown = ({originalDropDownObject, title = String, setOriginalDropDownOb
     return () => {
       document.removeEventListener('click', handleDocumentClick);
     }
-  }, [])
+  })
+
+  useEffect(() => {
+    if(searchInput !== '') {
+      mapSearchResults(searchInput, originalDropDownObject);
+    } else {
+      setMappedDropDown(mapDropDown(originalDropDownObject));
+    }
+
+    // eslint-disable-next-line
+  }, [originalDropDownObject])
 
   function mapDropDown(dropDownObject) {
     if(returnTrueIfInputIsAnArray(dropDownObject)) {
-      return dropDownObject.map((obj, i, arrayBeingMapped) => {
+      return dropDownObject.map((obj) => {
         return returnDropDownItemContainer(obj.title, obj.index);
       })
     } else {
-      return Object.keys(dropDownObject).map((keyname, i, keysBeingMapped) => {
+      return Object.keys(dropDownObject).map((keyname) => {
         return returnDropDownItemContainer(keyname, keyname)
       })
     }
@@ -74,7 +83,7 @@ const DropDown = ({originalDropDownObject, title = String, setOriginalDropDownOb
     newDropDownObject[indexOrKeyname].selected = true;
 
     setOriginalDropDownObject(newDropDownObject);
-    setMappedDropDown(mapDropDown(newDropDownObject));
+
     setIsOpen(false);
     setHeaderTitle(e.target.textContent);
   }
@@ -90,25 +99,12 @@ const DropDown = ({originalDropDownObject, title = String, setOriginalDropDownOb
         newDropDownObject[i].index = i;
       }
     } else {
-      console.log(newDropDownObject);
       delete newDropDownObject[indexOrKeyname];
-      console.log(newDropDownObject);
-
     }
 
-
-    if(searchInput !== '') {
-      mapSearchResults(searchInput, newDropDownObject);
-    } else {
-      setMappedDropDown(mapDropDown(newDropDownObject));
-    }
     setOriginalDropDownObject(newDropDownObject);
 
-    setHeaderTitle(
-      returnTrueIfInputIsAnArray(newDropDownObject) ?
-      newDropDownObject[0].title :
-      newDropDownObject[Object.keys(newDropDownObject)[0]].title
-    )
+    setHeaderTitle(title);
   }
 
   function handleDropdownHeaderClick() {
@@ -182,7 +178,7 @@ const DropDown = ({originalDropDownObject, title = String, setOriginalDropDownOb
     }
   }
 
-  function conditionallyRender() {
+  function returnDropDownHeaderDivOrSearchInput() {
     if(settings.isSearchable) {
       if(isOpen) {
         return <div>
@@ -194,14 +190,7 @@ const DropDown = ({originalDropDownObject, title = String, setOriginalDropDownOb
             onChange={(e) => handleSearch(e)}
           />
         </div>
-      } else {
-        return <div
-          className='dropdown-header'
-          onClick={() => {handleDropdownHeaderClick()}}
-        >
-          {headerTitle}
-        </div>
-      }
+      } 
     } 
 
     return <div
@@ -244,7 +233,7 @@ const DropDown = ({originalDropDownObject, title = String, setOriginalDropDownOb
     <div className='dropdown' ref={dropDownRef} >
 
       {
-        conditionallyRender()
+        returnDropDownHeaderDivOrSearchInput()
       }
 
       {
