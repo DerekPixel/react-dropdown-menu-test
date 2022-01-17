@@ -12,6 +12,11 @@ const DropDown = ({originalDropDownObject, title = String, setOriginalDropDownOb
   const [mappedDropDown, setMappedDropDown] = useState(mapDropDown(originalDropDownObject));
   const [searchInput, setSearchInput] = useState('');
 
+  const [
+    isOriginalDropDownObjectAnArray, 
+    setIsOriginalDropDownObjectAnArray
+  ] = useState(returnTrueIfInputIsAnArray(originalDropDownObject));
+
   const dropDownRef = useRef(null);
 
   useEffect(() => {
@@ -32,7 +37,7 @@ const DropDown = ({originalDropDownObject, title = String, setOriginalDropDownOb
   }, [originalDropDownObject])
 
   function mapDropDown(dropDownObject) {
-    if(returnTrueIfInputIsAnArray(dropDownObject)) {
+    if(isOriginalDropDownObjectAnArray) {
       return dropDownObject.map((obj) => {
         return returnDropDownItemContainer(obj.title, obj.index);
       })
@@ -69,7 +74,7 @@ const DropDown = ({originalDropDownObject, title = String, setOriginalDropDownOb
   function handleItemClick(e, indexOrKeyname) {
     var newDropDownObject = duplicateObjectsInArrayOrObject(originalDropDownObject);
 
-    if(returnTrueIfInputIsAnArray(newDropDownObject)) {
+    if(isOriginalDropDownObjectAnArray) {
       for(var i = 0; i < newDropDownObject.length; i++) {
         newDropDownObject[i].selected = false;
       }
@@ -91,7 +96,7 @@ const DropDown = ({originalDropDownObject, title = String, setOriginalDropDownOb
   function handleDeleteItem(indexOrKeyname) {
     var newDropDownObject = duplicateObjectsInArrayOrObject(originalDropDownObject);
 
-    if(returnTrueIfInputIsAnArray(newDropDownObject)) {
+    if(isOriginalDropDownObjectAnArray) {
 
       newDropDownObject.splice(indexOrKeyname, 1);
 
@@ -129,7 +134,7 @@ const DropDown = ({originalDropDownObject, title = String, setOriginalDropDownOb
   }
 
   function mapSearchResults(stringToSearch, dropDownObject) {
-    if(returnTrueIfInputIsAnArray(dropDownObject)) {
+    if(isOriginalDropDownObjectAnArray) {
 
       if(stringToSearch !== '') {
         let results = dropDownObject.filter(obj => {
