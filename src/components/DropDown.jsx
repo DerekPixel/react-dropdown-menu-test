@@ -35,6 +35,11 @@ const DropDown = ({originalDropDownObject, title = String, setOriginalDropDownOb
     // eslint-disable-next-line
   }, [originalDropDownObject])
 
+  function doCustomActions() {
+    //Put things that need to happen when you click an item in here.
+    return 
+  }
+
   function mapDropDown(dropDownObject) {
     if(isOriginalDropDownObjectAnArray) {
       return dropDownObject.map((obj) => {
@@ -87,6 +92,8 @@ const DropDown = ({originalDropDownObject, title = String, setOriginalDropDownOb
     newDropDownObject[indexOrKeyname].selected = true;
 
     setOriginalDropDownObject(newDropDownObject);
+
+    doCustomActions();
 
     setIsOpen(false);
     setHeaderTitle(e.target.textContent);
