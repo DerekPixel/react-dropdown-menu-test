@@ -7,15 +7,14 @@ var settingsObject = {
 
 const DropDown = ({originalDropDownObject, title = String, setOriginalDropDownObject, settings = settingsObject}) => {
 
+  const [
+    isOriginalDropDownObjectAnArray
+  ] = useState(returnTrueIfInputIsAnArray(originalDropDownObject));
+
   const [isOpen, setIsOpen] = useState(false);
   const [headerTitle, setHeaderTitle] = useState(title);
   const [mappedDropDown, setMappedDropDown] = useState(mapDropDown(originalDropDownObject));
   const [searchInput, setSearchInput] = useState('');
-
-  const [
-    isOriginalDropDownObjectAnArray, 
-    setIsOriginalDropDownObjectAnArray
-  ] = useState(returnTrueIfInputIsAnArray(originalDropDownObject));
 
   const dropDownRef = useRef(null);
 
