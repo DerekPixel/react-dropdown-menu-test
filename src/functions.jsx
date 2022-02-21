@@ -1,26 +1,46 @@
 
 export function duplicateObjectsInArrayOrObject(thingThatNeedsToBeDupped) {
-  var thingCopy, thingClone;
+  let thingClone;
 
   if(Array.isArray(thingThatNeedsToBeDupped)) {
-    thingCopy = thingThatNeedsToBeDupped.slice();
-    thingClone = [];
-    for(var i = 0; i < thingCopy.length; i++) {
-      var objClone = {...thingCopy[i]}
-  
-      thingClone.push(objClone);
-    }
+    thingClone = makeNewArrayThenPopulateWithClonedObjects(thingThatNeedsToBeDupped);
   } else {
-    thingCopy = {...thingThatNeedsToBeDupped};
-    thingClone = {};
-    for(var i = 0; i < Object.keys(thingCopy).length; i++) {
-      var objClone = {...thingCopy[Object.keys(thingCopy)[i]]}
-  
-      thingClone[Object.keys(thingCopy)[i]] = objClone;
-    }
+    thingClone = makeNewObjectThenPopulateWithClonedObjects(thingThatNeedsToBeDupped);
   }
-
+  
   return thingClone;
+}
+
+function makeNewArrayThenPopulateWithClonedObjects(arrayThatIsBeingCloned) {
+  let newArray = [];
+  let arrayCopy = arrayThatIsBeingCloned.slice();
+  populateArrayWithClonedObjects(arrayCopy, newArray);
+
+  return newArray;
+}
+
+function populateArrayWithClonedObjects(arrayCopy, newArray) {
+  for (let i = 0; i < arrayCopy.length; i++) {
+    let objClone = { ...arrayCopy[i] };
+    newArray.push(objClone);
+  }
+  return newArray
+}
+
+function makeNewObjectThenPopulateWithClonedObjects(ObjectThatIsBeingCloned) {
+  let newObject = {};
+  let objectCopy = { ...ObjectThatIsBeingCloned };
+  populateObjectWithClonedObjects(objectCopy, newObject);
+
+  return newObject;
+}
+
+function populateObjectWithClonedObjects(objectCopy, newObject) {
+  for (let i = 0; i < Object.keys(objectCopy).length; i++) {
+    let objClone = { ...objectCopy[Object.keys(objectCopy)[i]] };
+    newObject[Object.keys(objectCopy)[i]] = objClone;
+  }
+  return newObject;
 }
 
 export function shuffleArray(array) {
