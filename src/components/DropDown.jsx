@@ -120,7 +120,6 @@ const DropDown = ({originalDropDownObject, title = String, setOriginalDropDownOb
   }
 
   function handleDropdownHeaderClick(e) {
-    console.log(dropDownRef.current, dropDownInputRef.current, e.target);
     if(isOpen) {
       if(dropDownRef.current && dropDownInputRef.current !== e.target) {
         setIsOpen(false);
@@ -208,9 +207,9 @@ const DropDown = ({originalDropDownObject, title = String, setOriginalDropDownOb
       }
 
       <div
-        className='dropdown-indicator'
+        className={isOpen ? 'dropdown-indicator opened' : 'dropdown-indicator'}
       >
-        {'<'}
+        <span className="iconify" data-icon="bi:caret-left-fill"></span>
       </div>
     </div>
   }
