@@ -17,6 +17,7 @@ const DropDown = ({originalDropDownObject, title = String, setOriginalDropDownOb
   const [searchInput, setSearchInput] = useState('');
 
   const dropDownRef = useRef(null);
+  const dropDownInputRef = useRef(null);
 
   useEffect(() => {
     document.addEventListener('click', handleDocumentClick);
@@ -118,17 +119,23 @@ const DropDown = ({originalDropDownObject, title = String, setOriginalDropDownOb
     setHeaderTitle(title);
   }
 
-  function handleDropdownHeaderClick() {
+  function handleDropdownHeaderClick(e) {
+    console.log(dropDownRef.current, dropDownInputRef.current, e.target);
     if(isOpen) {
-      setIsOpen(false);
+      if(dropDownRef.current && dropDownInputRef.current !== e.target) {
+        setIsOpen(false);
+      }
     } else {
       setIsOpen(true);
     }
   }
 
   function handleDocumentClick(e) {
+
     if(dropDownRef.current && !dropDownRef.current.contains(e.target)) {
-      setIsOpen(false);
+      if(isOpen) {
+        setIsOpen(false);      
+      }
     }
   }
 
@@ -190,26 +197,39 @@ const DropDown = ({originalDropDownObject, title = String, setOriginalDropDownOb
   }
 
   function returnDropDownHeaderDivOrSearchInput() {
-    if(settings.isSearchable) {
-      if(isOpen) {
-        return <div>
-          <input
-            autoFocus
-            className='dropdown-header search-input'
-            type="search"
-            value={searchInput}
-            onChange={(e) => handleSearch(e)}
-          />
-        </div>
-      } 
-    } 
 
     return <div
       className='dropdown-header'
-      onClick={() => {handleDropdownHeaderClick()}}
+      onClick={handleDropdownHeaderClick}
+      ref={dropDownRef}
     >
-      {headerTitle}
+      {
+        returnSearchInputOrTitle()
+      }
+
+      <div
+        className='dropdown-indicator'
+      >
+        {'<'}
+      </div>
     </div>
+  }
+
+  function returnSearchInputOrTitle() {
+    if(isOpen && settingsObject.isSearchable) {
+      return (
+        <input
+          ref={dropDownInputRef}
+          autoFocus
+          className='search-input'
+          type="search"
+          value={searchInput}
+          onChange={(e) => handleSearch(e)} 
+        />          
+      )
+    }
+    
+    return <div className="dropdown-title">{headerTitle}</div> 
   }
 
   function duplicateObjectsInArrayOrObject(thingThatNeedsToBeDupped) {
@@ -241,7 +261,7 @@ const DropDown = ({originalDropDownObject, title = String, setOriginalDropDownOb
   }
 
   return (
-    <div className='dropdown' ref={dropDownRef} >
+    <div className='dropdown' >
 
       {
         returnDropDownHeaderDivOrSearchInput()
@@ -266,3 +286,5 @@ const DropDown = ({originalDropDownObject, title = String, setOriginalDropDownOb
 }
 
 export default DropDown
+
+
